@@ -1,0 +1,27 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Home>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.PropertyEditors.ValueConverters;
+@{
+	Layout = "Main.cshtml";
+	var img =  Model.Value<IPublishedContent>("bannerPicture")?.Url ?? "";
+
+}
+<!-- Banner -->
+<div class="jumbotron jumbotron-fluid home-hero" style="background-image:url('@img');">
+    <div class="overlay"></div>
+    <div class="inner">
+        <div class="container">
+            <h1 class="display-4 text-center">@Model.Value("mainBannerText")</h1>
+        </div>
+    </div>
+</div>
+
+<!--Latest Books-->
+<div style="padding-bottom: 50px">
+    @Html.Partial("Books")
+</div>
+
+<!--Latest Newspapper-->
+<div style="padding-bottom: 50px">
+    @Html.Partial("Newspapper")
+</div>

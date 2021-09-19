@@ -1,0 +1,22 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Book>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+	Layout = "Main.cshtml";
+}
+<div class="container mt-5">
+    <div class="row">
+        
+        <div class="col-4">
+            <div style="width: 18rem; box-shadow: 2px 4px 8px #888888;">
+                <img class="card-img-top" src='@Model.GetCropUrl("coverPicture","bookCropper")' alt="@Model.Name">
+            </div>
+        </div>
+        
+        <div class="col-8">
+            <h1>@Model.Value("title")</h1>
+            <p>Author: @Model.Value("author")</p>
+            <br>
+            <p>@Model.Value("description")</p>
+        </div>
+    </div>
+</div>

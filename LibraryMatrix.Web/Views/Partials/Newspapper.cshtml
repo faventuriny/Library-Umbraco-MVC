@@ -1,0 +1,40 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.PropertyEditors.ValueConverters;
+
+@{
+    var newspappers = Umbraco.ContentAtRoot().DescendantsOrSelfOfType("newspapers").FirstOrDefault();
+    var newspappersChildren = newspappers.Children.OrderBy(b => b.Value("newspaperDate")).Reverse().Take(3);
+}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>@newspappers.Value("newspappersSectionTitle") </h1>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var newspapper in newspappersChildren)
+        {
+            IPublishedContent linkForABook = newspapper.Value<IPublishedContent>("linkForABook");
+            <div class="col">
+                <div class="card" style="width: 18rem; box-shadow: 2px 4px 8px #888888;">
+                    <div class="card-header">@newspapper.Name</div>
+                    <ul class="list-group list-group-flush">
+                        @if (linkForABook != null)
+                        {
+                            <li class="list-group-item">
+                                <div>
+                                    <span>for <strong>@linkForABook.Name</strong></span>
+                                </div>
+                                <div>
+                                    <a href="@linkForABook.Url">click here<i class="fas fa-hand-pointer"></i></a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>

@@ -1,0 +1,114 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage<ContentModels.Books>
+@using ContentModels = Umbraco.Web.PublishedModels;
+@{
+    Layout = "Main.cshtml";
+
+    var searchQuery = Request.QueryString["query"];
+    IEnumerable<PublishedSearchResult> searchResults;
+    var resultsCount = 0;
+
+    // Do we have a search?
+    if (!string.IsNullOrEmpty(searchQuery))
+    {
+        //Ask Umbraco to search for term and give me the results
+        searchResults = Umbraco.ContentQuery.Search(searchQuery, string.Empty, "InternalIndex").Where(w => w.Content.IsDocumentType("book"));
+        resultsCount = searchResults != null && searchResults.Any() ? searchResults.Count() : 0;
+    } else
+    {
+        searchResults = null;
+    }
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1 class="text-center mt-5 mb-3">Search For A Book</h1>
+            <!--Search bar-->
+            <form action="@Model.Url" method="Get" class="d-flex justify-content-center">
+                <div class="input-group d-flex justify-content-center">
+                    <div class="form-outline">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Search..."
+                               name="query"
+                               id="form1"
+                               />
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    <!--Search result-->
+    @if (!string.IsNullOrEmpty(searchQuery))
+    {
+
+        if (resultsCount == 0 || searchResults == null)
+        {
+            <span>
+                No result were found for @searchQuery
+            </span>
+        }
+        else
+        {
+            foreach (var result in searchResults)
+            {
+                var editors = (IEnumerable<IPublishedElement>)@result.Content.Value("nestedEditors");
+                var firstSlide = true; // parameter for the carousel
+               
+            <div class="d-flex justify-content-between">
+                <!--Name-->
+                <div class="col-4">
+                    <h3>@result.Content.Value("title")</h3>
+                    <p>Author: <strong>@result.Content.Value("author")</strong></p>
+                    <img style="border-radius:5px" src="@result.Content.Value("coverPicture")" />
+                </div>
+                <!--Editors-->
+
+                <!--carousel -->
+                <div class="col-8">
+                    <h3>Editos:</h3>
+                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                        <div class="carousel-inner">
+                            @foreach (var editor in editors)
+                            {
+                                var img = editor.Value<IPublishedContent>("editorPicture").Url();
+                                if (firstSlide)
+                                {
+                                    firstSlide = false;
+                                    <div class="carousel-item active">
+                                        <img style="width:200px; height:600px; object-fit: cover; border-radius:5px" class="d-block w-100" src="@img" alt="First slide">
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <h2>@editor.Value("editorName") @editor.Value("editorLastName")</h2>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="carousel-item">
+                                        <img style="width: 200px; height: 600px; object-fit: cover; border-radius: 5px " class="d-block w-100" src="@img" alt="First slide">
+                                        <div class="carousel-caption d-none d-md-block">
+                                            <h2>@editor.Value("editorName") @editor.Value("editorLastName")</h2>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                            <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="sr-only">Next</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>

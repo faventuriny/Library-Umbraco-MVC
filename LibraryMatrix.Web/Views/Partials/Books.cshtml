@@ -1,0 +1,31 @@
+﻿@inherits Umbraco.Web.Mvc.UmbracoViewPage
+@using ContentModels = Umbraco.Web.PublishedModels;
+@using Umbraco.Core.PropertyEditors.ValueConverters;
+
+@{
+    var books = Umbraco.ContentAtRoot().DescendantsOrSelfOfType("books").FirstOrDefault();
+    var booksChildren = books.Children.OrderBy(b=>b.Value("publishedDate")).Reverse().Take(3);
+}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>@books.Value("booksSectionName")</h1>
+        </div>
+    </div>
+    <div class="row">
+        @foreach (var book in booksChildren)
+        {
+            <div class="col" >
+                <a href="@book.Url">
+                    <div class="card" style="width: 18rem; box-shadow: 2px 4px 8px #888888;">
+                        <img class="card-img-top" src='@book.Value("coverPicture", fallback: Fallback.ToLanguage)?.GetCropUrl("bookCropper")' alt="@book.Name">
+                        <div class="card-body">
+                            <p class="card-text">@book.Name</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        }
+    </div>
+</div>
